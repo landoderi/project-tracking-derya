@@ -1,3 +1,29 @@
+<style>
+  /* Ganti warna background sidebar */
+  .layout-menu {
+    background-color: #11052c !important; /* hitam pekat */
+  }
+
+  /* Ubah warna teks dan ikon agar tetap terlihat */
+  .layout-menu .menu-item a,
+  .layout-menu .menu-header-text,
+  .layout-menu .menu-icon {
+    color: #ffffff !important;
+  }
+
+  /* Saat hover */
+  .layout-menu .menu-item.active > .menu-link,
+  .layout-menu .menu-item:hover > .menu-link {
+    background-color: #ffffff1e !important;
+    color: #958aff !important;
+  }
+
+  /* Warna teks brand */
+  .app-brand-text {
+    color: #ffffff !important;
+  }
+</style>
+
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
         <a href="index.html" class="app-brand-link">
@@ -71,7 +97,13 @@
         <li class="menu-item {{ request()->routeIs('dashboard.users.*') ? 'active' : '' }}">
             <a href="{{ route('dashboard.users.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
-                <div data-i18n="Analytics">Users Management</div>
+                <div data-i18n="Analytics">Pengguna</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->routeIs('kategori*') ? 'active' : '' }}">
+            <a href="{{ route('kategori.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-dock-top"></i>
+                <div data-i18n="Analytics">Kategori keuangan</div>
             </a>
         </li>
         <li class="menu-item">
