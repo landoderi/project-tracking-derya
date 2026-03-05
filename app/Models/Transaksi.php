@@ -30,7 +30,7 @@ class Transaksi extends Model
     // 🔗 Relasi ke Kategori
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'kategori_id');
+        return $this->belongsTo(KategoriKeuangan::class, 'kategori_id');
     }
 
     // 🔗 Relasi ke Akun

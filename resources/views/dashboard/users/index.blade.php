@@ -40,6 +40,9 @@
                                         <a href="{{ route('dashboard.users.edit', $user->id) }}" class="btn btn-sm btn-warning">
                                             <i class="bx bx-edit"></i> Edit
                                         </a>
+                                        <a href="{{ route('dashboard.users.history', $user->id) }}" class="btn btn-sm btn-info">
+        <i class="bx bx-history"></i> History
+    </a>
                                         @if(!($loop->first && $user->role === 'admin'))
                                         <a href="{{ route('dashboard.users.destroy', $user->id) }}"
                                            class="btn btn-sm btn-danger" data-confirm-delete="true">

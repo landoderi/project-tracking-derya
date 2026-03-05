@@ -78,4 +78,13 @@ class UserController extends Controller
         toast()->success('Success', 'User deleted successfully');
         return redirect()->route('dashboard.users.index');
     }
+    public function history($id)
+{
+    // Mengambil user beserta transaksinya, diurutkan dari yang terbaru
+    $user = User::with(['transaksi' => function($query) {
+        $query->orderBy('tanggal', 'desc');
+    }, 'transaksi.kategori', 'transaksi.akun'])->findOrFail($id);
+
+    return view('dashboard.users.history', compact('user'));
+}
 }

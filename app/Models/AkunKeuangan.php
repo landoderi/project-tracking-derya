@@ -12,10 +12,12 @@ class AkunKeuangan extends Model
     protected $table = 'akun_keuangan';
 
     protected $fillable = [
-        'nama_akun',
-        'jenis',
-        'saldo_awal',
-    ];
+    'user_id',
+    'nama_akun',
+    'jenis',
+    'saldo_awal',
+    'saldo',
+];
 
     // 🔗 Relasi ke Transaksi
     public function transaksi()

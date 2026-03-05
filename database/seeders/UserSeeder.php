@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 
 class UserSeeder extends Seeder
@@ -13,21 +13,28 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // ✅ Nonaktifkan foreign key constraint sementara
+        Schema::disableForeignKeyConstraints();
 
-        User::truncate();
+        // ✅ Kosongkan tabel user secara aman
+        User::query()->delete();
 
-        $admin = \App\Models\User::create([
+        // ✅ Aktifkan kembali foreign key constraint
+        Schema::enableForeignKeyConstraints();
+
+        // ✅ Tambahkan user baru
+        User::create([
             'name' => 'Admin',
             'role' => 'admin',
             'email' => 'admin@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
 
-        $petugas = \App\Models\User::create([
+        User::create([
             'name' => 'Member',
             'role' => 'member',
             'email' => 'member@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
     }
 }

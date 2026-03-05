@@ -46,14 +46,24 @@
                                 </td>
                                 <td>{{ $k->created_at->format('d M Y') }}</td>
                                 <td>
-                                    <form action="{{ route('kategori.destroy', $k->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')" style="display:inline-block;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bx bx-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
+    <button type="button" 
+            class="btn btn-sm btn-outline-warning edit-kategori-btn" 
+            data-bs-toggle="modal" 
+            data-bs-target="#modalEditKategori"
+            data-id="{{ $k->id }}"
+            data-nama="{{ $k->nama }}"
+            data-tipe="{{ $k->tipe }}">
+        <i class="bx bx-edit-alt"></i>
+    </button>
+
+    <form action="{{ route('dashboard.kategori.destroy', $k->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kategori ini?')" style="display:inline-block;">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="btn btn-sm btn-outline-danger">
+            <i class="bx bx-trash"></i>
+        </button>
+    </form>
+</td>
                             </tr>
                         @empty
                             <tr>
@@ -69,7 +79,7 @@
     <!-- Modal Tambah Kategori -->
     <div class="modal fade" id="modalTambahKategori" tabindex="-1" aria-labelledby="modalTambahKategoriLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form action="{{ route('kategori.store') }}" method="POST" class="modal-content">
+            <form action="{{ route('dashboard.kategori.store') }}" method="POST" class="modal-content">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTambahKategoriLabel">Tambah Kategori Keuangan</h5>
@@ -96,6 +106,56 @@
             </form>
         </div>
     </div>
-
+<div class="modal fade" id="modalEditKategori" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="formEditKategori" method="POST" class="modal-content">
+            @csrf
+            @method('PUT')
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Kategori Keuangan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Nama Kategori</label>
+                    <input type="text" name="nama" id="edit-nama" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipe Kategori</label>
+                    <select name="tipe" id="edit-tipe" class="form-select" required>
+                        <option value="pemasukan">Pemasukan</option>
+                        <option value="pengeluaran">Pengeluaran</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-warning">Update Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
 </div>
 @endsection
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editButtons = document.querySelectorAll('.edit-kategori-btn');
+        const formEdit = document.getElementById('formEditKategori');
+
+        editButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                const nama = this.getAttribute('data-nama');
+                const tipe = this.getAttribute('data-tipe');
+
+                document.getElementById('edit-nama').value = nama;
+                document.getElementById('edit-tipe').value = tipe;
+
+                // Gunakan URL absolut yang mengarah tepat ke dashboard/kategori/{id}
+                formEdit.action = '/dashboard/kategori/' + id; 
+                
+                console.log('Form action diubah menjadi: ' + formEdit.action); // Cek di console (F12)
+            });
+        });
+    });
+</script>
