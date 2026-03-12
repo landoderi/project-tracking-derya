@@ -53,7 +53,6 @@
 
     {{-- Kartu Statistik --}}
     <div class="row">
-        {{-- Total Kategori --}}
         <div class="col-lg-4 col-md-6 mb-4">
             <div class="card">
                 <div class="card-body">
@@ -69,7 +68,6 @@
             </div>
         </div>
 
-        {{-- Akun Aktif --}}
         <div class="col-lg-4 col-md-6 mb-4">
             <div class="card">
                 <div class="card-body">
@@ -85,7 +83,6 @@
             </div>
         </div>
 
-        {{-- Total Transaksi --}}
         <div class="col-lg-4 col-md-12 mb-4">
             <div class="card">
                 <div class="card-body">
@@ -104,15 +101,15 @@
 
     {{-- Grafik & Transaksi Terbaru --}}
     <div class="row">
-        {{-- Grafik --}}
+        {{-- Grafik Keuangan --}}
         <div class="col-lg-8 mb-4">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Grafik Keuangan</h5>
-                    <small class="text-muted">Pemasukan vs Pengeluaran</small>
+                    <h5 class="card-title mb-0">Aktivitas Keuangan 7 Hari Terakhir</h5>
+                    <small class="text-muted">Pantau arus kas harian</small>
                 </div>
                 <div class="card-body">
-                    <div id="totalRevenueChart" style="min-height: 280px;"></div>
+                    <div id="chartKeuanganHarian"></div>
                 </div>
             </div>
         </div>
@@ -124,11 +121,11 @@
                     <h5 class="mb-0">Transaksi Terbaru</h5>
                     <a href="{{ route('dashboard.transaksi.index') }}" class="small text-primary">Lihat Semua</a>
                 </div>
-                <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+                <div class="card-body" style="max-height: 350px; overflow-y: auto;">
                     @forelse($transaksiTerbaru ?? [] as $t)
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                             <div>
-                                <strong>{{ $t->keterangan ?? '-' }}</strong><br>
+                                <strong class="d-block">{{ $t->keterangan ?? '-' }}</strong>
                                 <small class="text-muted">{{ \Carbon\Carbon::parse($t->tanggal)->translatedFormat('d M Y') }}</small>
                             </div>
                             <span class="fw-bold {{ $t->jenis == 'pemasukan' ? 'text-success' : 'text-danger' }}">
@@ -137,7 +134,10 @@
                             </span>
                         </div>
                     @empty
-                        <p class="text-center text-muted my-3">Belum ada transaksi terbaru.</p>
+                        <div class="text-center my-4">
+                            <i class="bx bx-receipt fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">Belum ada transaksi.</p>
+                        </div>
                     @endforelse
                 </div>
             </div>
@@ -147,51 +147,58 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.41.0/dist/apexcharts.min.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    var pemasukan = @json($pemasukan);
-    var pengeluaran = @json($pengeluaran);
-    var bulanLabels = @json($bulanLabels);
+document.addEventListener("DOMContentLoaded", function() {
+    const labels = @json($hariLabels ?? []);
+    const dataMasuk = @json($pemasukanHarian ?? []);
+    const dataKeluar = @json($pengeluaranHarian ?? []);
 
-    console.log("Labels:", bulanLabels);
-    console.log("Pemasukan:", pemasukan);
-    console.log("Pengeluaran:", pengeluaran);
+    const chartEl = document.querySelector("#chartKeuanganHarian");
 
-    if (pemasukan.every(v => v === 0) && pengeluaran.every(v => v === 0)) {
-        document.querySelector("#totalRevenueChart").innerHTML =
-            "<p class='text-center text-muted mt-4'>Belum ada data transaksi bulan ini.</p>";
-        return;
+    if (chartEl) {
+        chartEl.innerHTML = ''; 
+
+        const options = {
+            chart: {
+                type: 'area',
+                height: 320,
+                toolbar: { show: false },
+                fontFamily: 'Public Sans, sans-serif'
+            },
+            series: [
+                { name: 'Pemasukan', data: dataMasuk },
+                { name: 'Pengeluaran', data: dataKeluar }
+            ],
+            xaxis: { 
+                categories: labels,
+                axisBorder: { show: false }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (val) { return "Rp " + val.toLocaleString('id-ID'); }
+                }
+            },
+            colors: ['#28a745', '#dc3545'],
+            stroke: { curve: 'smooth', width: 2 },
+            dataLabels: { enabled: false },
+            fill: {
+                type: 'gradient',
+                gradient: { opacityFrom: 0.5, opacityTo: 0.1 }
+            },
+            grid: {
+                borderColor: '#f1f1f1',
+                padding: { top: 10, bottom: 0 }
+            }
+        };
+
+        try {
+            const chart = new ApexCharts(chartEl, options);
+            chart.render();
+        } catch (err) {
+            console.error("Gagal render grafik:", err);
+        }
     }
-
-    var options = {
-        chart: { type: 'bar', height: 300, toolbar: { show: false } },
-        plotOptions: {
-            bar: { horizontal: false, columnWidth: '45%', borderRadius: 6 }
-        },
-        series: [
-            { name: 'Pemasukan', data: pemasukan },
-            { name: 'Pengeluaran', data: pengeluaran }
-        ],
-        colors: ['#28a745', '#dc3545'],
-        dataLabels: { enabled: false },
-        xaxis: {
-            categories: bulanLabels,
-            labels: { style: { fontSize: '13px' } }
-        },
-        yaxis: {
-            title: { text: 'Jumlah (Rp)' },
-            labels: { formatter: val => 'Rp ' + new Intl.NumberFormat('id-ID').format(val) }
-        },
-        tooltip: {
-            y: { formatter: val => 'Rp ' + new Intl.NumberFormat('id-ID').format(val) }
-        },
-        legend: { position: 'top' },
-        grid: { borderColor: '#f1f1f1' }
-    };
-
-    var chart = new ApexCharts(document.querySelector("#totalRevenueChart"), options);
-    chart.render();
 });
 </script>
 @endsection
