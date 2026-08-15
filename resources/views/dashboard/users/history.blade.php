@@ -4,7 +4,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold py-3 mb-0">
-            <span class="text-muted fw-light">Users /</span> History Transaksi: {{ $user->name }}
+            <span class="text-muted fw-light"></span> History Transaksi: {{ $user->name }}
         </h4>
         <a href="{{ route('dashboard.users.index') }}" class="btn btn-secondary">
             <i class="bx bx-arrow-back"></i> Kembali
